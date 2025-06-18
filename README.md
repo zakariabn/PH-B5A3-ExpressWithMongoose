@@ -11,7 +11,7 @@ Your project must include:
 *   Use of aggregation pipeline
 *   At least one **Mongoose static or instance method**
 *   Use of **Mongoose middleware** (`pre`, `post`)
-*   Filtering and pagination features
+*   Filtering features
 
 * * *
 
@@ -44,6 +44,10 @@ Your project must include:
 * * *
 
 ### Generic Error Response
+
+1. **`message`**: A brief error message explaining what went wrong.
+2. **`success`**: Set to `false` for error responses.
+3. **`error`**: The error message or error object returned by the application 
 
 ```json
 {
