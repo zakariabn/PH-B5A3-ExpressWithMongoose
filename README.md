@@ -282,16 +282,16 @@ Supports filtering, sorting, and pagination.
 
 Return a summary of borrowed books, including:
 
-*       *       *   Total borrowed quantity per book (`totalQuantity`)
-        *   Book details: `title` and `isbn`
+*  Total borrowed quantity per book (`totalQuantity`)
+*    Book details: `title` and `isbn`
 
 **Details:**
 
 Use MongoDB aggregation pipeline to:
 
-*       *       *   Group borrow records by book
-        *   Sum total quantity borrowed per book
-        *   Return book info and total borrowed quantity
+*  Group borrow records by book
+*   Sum total quantity borrowed per book
+*   Return book info and total borrowed quantity
 
 **Response:**
 
@@ -317,6 +317,10 @@ Use MongoDB aggregation pipeline to:
   ]
 }
 ```
+
+
+💡 **Pro Tip:** Strictly follow the **exact API endpoints and response formats** provided in this document — **any deviation may result in mark deduction.**
+
 
 * * *
 
