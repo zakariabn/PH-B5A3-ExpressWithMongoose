@@ -37,9 +37,9 @@ Your project must include:
 
 ### Borrow Model Fields & Validation
 
-*   **book** (ObjectId) — Mandatory. References the borrowed book’s ID.
+*   **book** (objectId) — Mandatory. References the borrowed book’s ID.
 *   **quantity** (number) — Mandatory. Positive integer representing the number of copies borrowed.
-*   **dueDate** (Date) — Mandatory. The date by which the book must be returned.
+*   **dueDate** (date) — Mandatory. The date by which the book must be returned.
 
 * * *
 
@@ -118,7 +118,7 @@ Your project must include:
 
 **GET** `/api/books`
 
-Supports filtering, sorting, and pagination.
+Supports filtering, and sorting.
 
 #### Example Query:
 
@@ -324,7 +324,7 @@ Use MongoDB aggregation pipeline to:
 
 * * *
 
-## Bonus Section (10 Marks)
+## ✨ Bonus Section (10 Marks)
 
 *   **Code Quality:** Clean, readable code with meaningful names.
 *   **API Structure:** Follow provided endpoints and response formats exactly.
