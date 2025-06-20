@@ -3,3 +3,6 @@
 
 #environment variables
 .env
+
+#instruction and notes
+task-instruction.md

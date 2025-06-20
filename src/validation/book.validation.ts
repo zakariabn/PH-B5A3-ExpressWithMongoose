@@ -16,7 +16,7 @@ export const bookZodSchema = z.object({
   isbn: z.number().min(5),
   copies: z.number().min(1),
   available: z.boolean().default(true),
-  description: z.string().optional(),
+  description: z.string().trim().optional(),
 });
 
 export const updateBookRequestBodyZodSchema = z.object({
