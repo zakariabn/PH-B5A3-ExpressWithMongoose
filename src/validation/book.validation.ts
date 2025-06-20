@@ -26,17 +26,23 @@ export const updateBookRequestBodyZodSchema = z.object({
 });
 
 export const bookQuerySchema = z.object({
-  filter: z.string().optional(),
-  sortBy: z.string().optional(),
-  sort: z.enum(["desc", "asc"]).optional(), // optionally validate allowed values
+  filter: genreEnum.optional(),
+  sortBy: z.string().optional().default("createdAt"),
+  // sortBy: z
+  //   .enum(["title", "author", "copies", "createdAt", "updatedAt"])
+  //   .optional()
+  //   .default("createdAt"),
+  sort: z.enum(["desc", "asc"]).optional().default("desc"), // optionally validate allowed values
   limit: z
     .string()
     .regex(/^\d+$/, "Limit must be a positive integer")
     .transform((val) => parseInt(val, 10))
-    .optional(),
+    .optional()
+    .default(0),
   skip: z
     .string()
     .regex(/^\d+$/, "Skip must be a positive integer")
     .transform((val) => parseInt(val, 10))
-    .optional(),
+    .optional()
+    .default(0),
 });

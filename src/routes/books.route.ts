@@ -1,13 +1,11 @@
 import express, { Request, Response, Router } from "express";
 import Book from "../model/book.model";
 import { isValidObjectId } from "mongoose";
-import { IResponseError } from "../interfaces/error.interfaces";
 import {
   bookQuerySchema,
   bookZodSchema,
   updateBookRequestBodyZodSchema,
 } from "../validation/book.validation";
-import { error } from "console";
 
 // defining router
 const bookRouter: Router = express.Router();
@@ -88,6 +86,8 @@ bookRouter.patch(
       });
     }
 
+    const { copies } = validBody.data;
+
     // Check for valid MongoDB ObjectId
     if (!isValidObjectId(id)) {
       res.status(400).json({
@@ -99,11 +99,9 @@ bookRouter.patch(
     try {
       const singleBook = await Book.findByIdAndUpdate(
         id,
-        { $set: { copies: body.copies } },
+        { $set: { copies: copies, available: copies > 0 } },
         { new: true }
       );
-
-      console.log(singleBook);
 
       if (!singleBook) {
         return res.status(404).json({
@@ -138,12 +136,7 @@ bookRouter.get("/", async (req: Request, res: Response): Promise<any> => {
       errors: parseQueryResult.error.format(),
     });
   }
-  const {
-    filter,
-    sortBy = "updatedAt",
-    sort = "desc",
-    limit = 0,
-  } = parseQueryResult.data;
+  const { filter, sortBy, sort, limit } = parseQueryResult.data;
 
   try {
     const query: Record<string, any> = {};
@@ -152,10 +145,13 @@ bookRouter.get("/", async (req: Request, res: Response): Promise<any> => {
       query.genre = filter;
     }
 
-    const allBooks = await Book.find(query).sort({ sortBy: sort }).limit(limit);
+    const allBooks = await Book.find(query)
+      .sort({ [sortBy]: sort })
+      .limit(limit);
 
     res.status(200).json({
       success: true,
+      message: "Books retrieved successfully",
       count: allBooks.length,
       data: allBooks,
     });
@@ -193,6 +189,7 @@ bookRouter.get("/:book_id", async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
+      message: "Book retrieved successfully",
       data: singleBook,
     });
   } catch (error) {
@@ -203,5 +200,45 @@ bookRouter.get("/:book_id", async (req: Request, res: Response) => {
     });
   }
 });
+
+// delete a book by id
+bookRouter.delete(
+  "/:book_id",
+  async (req: Request, res: Response): Promise<any> => {
+    const { book_id: id } = req.params;
+
+    // Check for valid MongoDB ObjectId
+    if (!isValidObjectId(id)) {
+      res.status(400).json({
+        success: false,
+        message: `${id} is not a valid ObjectId.`,
+      });
+    }
+
+    try {
+      const deletedBookData = await Book.findByIdAndDelete(id);
+
+      if (!deletedBookData) {
+        return res.status(200).json({
+          success: false,
+          message: `Book not found with id: ${id}`,
+          data: deletedBookData,
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Book deleted successfully",
+        data: deletedBookData,
+      });
+    } catch (error) {
+      console.error("Failed to Delete book by ID:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error.",
+      });
+    }
+  }
+);
 
 export default bookRouter;

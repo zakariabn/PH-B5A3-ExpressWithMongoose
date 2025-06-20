@@ -4,17 +4,16 @@ import "dotenv/config";
 
 const port = process.env.PORT || 5000;
 
-app.listen(port, () => {
-  try {
-    console.log(`App listening on port :${port}`);
-  } catch (error) {}
-});
-
 async function main() {
   try {
+    // connection to database with mongoose
     await mongoose.connect("mongodb://127.0.0.1:27017/library_management");
     console.log("✅ Database connection successful");
-    console.log(`🟢 App listening on port: ${port}`);
+
+    // listening
+    app.listen(port, () => {
+      console.log(`🟢 App listening on port: ${port}`);
+    });
   } catch (error) {
     console.error("❌ Database connection failed:", error);
 
