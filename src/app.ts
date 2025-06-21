@@ -5,8 +5,10 @@ import { success } from "zod/v4";
 import errorHandler from "./middleware/globalErrorHandler";
 import { connectToDatabase } from "./utils/db";
 
-// Connect to DB
-connectToDatabase();
+// Connect to DB and log any potential errors
+connectToDatabase().catch((err) => {
+  console.error("Startup database connection failed:", err);
+});
 
 const app: Application = express();
 
