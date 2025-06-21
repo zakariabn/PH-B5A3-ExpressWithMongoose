@@ -3,11 +3,13 @@ import app from "./app";
 import "dotenv/config";
 
 const port = process.env.PORT || 5000;
+const mongoURI =
+  process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/library_management";
 
 async function main() {
   try {
     // connection to database with mongoose
-    await mongoose.connect("mongodb://127.0.0.1:27017/library_management");
+    await mongoose.connect(mongoURI);
     console.log("✅ Database connection successful");
 
     // listening

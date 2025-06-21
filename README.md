@@ -6,12 +6,14 @@ A robust Library Management System built with **Express**, **TypeScript**, and *
 
 ## 🚀 Features
 
-- **Book Management:** Create, read, update, delete books.
-- **Borrowing System:** Borrow books with business logic enforcement.
-- **Filtering & Sorting:** Retrieve books with flexible queries.
-- **Aggregation:** Get summary of borrowed books.
-- **Validation & Error Handling:** Consistent, descriptive error responses.
-- **Modern Stack:** Express, TypeScript, MongoDB (Mongoose).
+- **CRUD Operations:** Full support for creating, reading, updating, and deleting books.
+- **Schema Validation:** Robust validation with **Zod** to ensure data integrity.
+- **Advanced Querying:** Filter books by genre and sort results with multiple criteria.
+- **Borrowing System:** Manage book borrowing with robust business logic to handle availability and stock.
+- **Aggregation Pipeline:** Get a summary of all borrowed books.
+- **Service-Oriented Architecture:** Business logic is cleanly separated into a service layer.
+- **Global Error Handling:** Centralized middleware for consistent error responses.
+- **Modern Tech Stack:** Built with Express, TypeScript, Zod, and Mongoose.
 
 ---
 
@@ -36,16 +38,29 @@ Create a `.env` file in the root directory:
 
 ```
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/library-management
+MONGODB_URI="mongodb://127.0.0.1:27017/library_management"
 ```
 
 ### 4. Run the Application
 
-#### For Development (with hot reload):
+#### For Development (with hot reload using `ts-node-dev`):
 
 ```bash
 npm run dev
 ```
+
+---
+
+## 🏛️ Architecture
+
+This project is built using a feature-based, service-oriented architecture to ensure a clear separation of concerns.
+
+-   **Controllers**: Handle incoming HTTP requests, validate request bodies using **Zod**, and send back responses. They delegate the core business logic to the service layer.
+-   **Services**: Contain the main business logic. They interact with the database models and perform all the necessary operations.
+-   **Routes**: Define the API endpoints and map them to the appropriate controllers.
+-   **Global Error Handler**: A middleware that catches all errors (both synchronous and asynchronous) and formats them into a consistent JSON response, preventing the application from crashing.
+
+This structure makes the codebase clean, maintainable, and easy to test.
 
 ---
 
@@ -157,7 +172,7 @@ npm run dev
 
 ### 4. **Update Book**
 
-- **Endpoint:** `Patch /api/books/:bookId`
+- **Endpoint:** `PATCH /api/books/:bookId`
 - **Request Body:** (Partial updates allowed)
 
   ```json
@@ -277,35 +292,34 @@ npm run dev
 
 ## ❌ Error Response Format
 
-All errors follow this structure:
+All errors are handled by a global middleware. For request validation, Zod is used, and any validation errors are formatted into the following structure:
 
 ```json
 {
-  "message": "Validation failed",
   "success": false,
+  "message": "Validation failed",
   "error": {
-    "name": "ValidationError",
-    "errors": {
-      "copies": {
-        "message": "Copies must be a positive number",
-        "name": "ValidatorError",
-        "properties": {
-          "message": "Copies must be a positive number",
-          "type": "min",
-          "min": 0
-        },
-        "kind": "min",
-        "path": "copies",
-        "value": -5
+    "issues": [
+      {
+        "code": "too_small",
+        "minimum": 0,
+        "type": "number",
+        "inclusive": true,
+        "exact": false,
+        "message": "Copies must be a non-negative number",
+        "path": [
+          "copies"
+        ]
       }
-    }
+    ],
+    "name": "ZodError"
   }
 }
 ```
 
 ---
 
-## 📚 Book Model Fields
+## �� Book Model Fields
 
 - `title` (string, required)
 - `author` (string, required)

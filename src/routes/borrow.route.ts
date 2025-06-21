@@ -6,15 +6,16 @@ import { success } from "zod/v4";
 
 const borrowRouter: Router = express.Router();
 
-borrowRouter.post("/", async (req: Request, res: Response): Promise<any> => {
+borrowRouter.post("/", async (req: Request, res: Response): Promise<void> => {
   const validBorrowReqBody = borrowBookZodSchema.safeParse(req.body);
 
   if (!validBorrowReqBody.success) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       message: "Validation failed",
       errors: validBorrowReqBody.error.format(),
     });
+    return;
   }
 
   const { book: id, quantity, dueDate } = validBorrowReqBody.data;
@@ -23,17 +24,19 @@ borrowRouter.post("/", async (req: Request, res: Response): Promise<any> => {
     const borrowBook = await Book.findById(id);
 
     if (!borrowBook) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: `Book not found with id: ${id}`,
       });
+      return;
     }
 
     if (borrowBook.copies < quantity) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: `Only ${borrowBook.copies} copies available. You requested ${quantity}.`,
       });
+      return;
     }
 
     borrowBook.copies -= quantity;
@@ -42,15 +45,19 @@ borrowRouter.post("/", async (req: Request, res: Response): Promise<any> => {
     // saving updated books info
     await borrowBook.save();
 
-    const newBorrow = await Borrow.create(validBorrowReqBody.data);
-    return res.status(200).json({
+    // const newBorrow = await Borrow.create(validBorrowReqBody.data);
+
+    const newBorrow = new Borrow(validBorrowReqBody.data);
+    await newBorrow.save();
+
+    res.status(200).json({
       success: true,
       message: "Book borrowed successfully.",
       data: newBorrow,
     });
   } catch (error) {
     console.log("Failed while borrowing: ", error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: "Internal server error.",
       error,

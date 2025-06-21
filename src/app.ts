@@ -2,6 +2,7 @@ import express, { Application, NextFunction, Request, Response } from "express";
 import bookRouter from "./routes/books.route";
 import borrowRouter from "./routes/borrow.route";
 import { success } from "zod/v4";
+import errorHandler from "./middleware/globalErrorHandler";
 
 const app: Application = express();
 
@@ -11,6 +12,9 @@ app.use(express.json()); //for body parser
 // routes
 app.use("/api/books", bookRouter);
 app.use("/api/borrow", borrowRouter);
+
+// global error handler
+app.use(errorHandler);
 
 // root path
 app.get("/", (req: Request, res: Response) => {
