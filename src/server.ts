@@ -1,27 +1,21 @@
-import mongoose from "mongoose";
 import app from "./app";
-import "dotenv/config";
+import 'dotenv/config';
 
 const port = process.env.PORT || 5000;
-const mongoURI =
-  process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/library_management";
 
 async function main() {
   try {
-    // connection to database with mongoose
-    await mongoose.connect(mongoURI);
-    console.log("✅ Database connection successful");
-
-    // listening
+    // Database connection is now handled by app.ts
+    // We just need to start listening here for local development
+    
     app.listen(port, () => {
       console.log(`🟢 App listening on port: ${port}`);
     });
   } catch (error) {
-    console.error("❌ Database connection failed:", error);
-
-    // Exiting the process if something went wrong
+    console.error("❌ Failed to start server:", error);
     process.exit(1);
   }
 }
+
 // function call
 main();

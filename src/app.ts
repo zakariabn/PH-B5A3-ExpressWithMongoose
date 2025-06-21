@@ -3,6 +3,10 @@ import bookRouter from "./routes/books.route";
 import borrowRouter from "./routes/borrow.route";
 import { success } from "zod/v4";
 import errorHandler from "./middleware/globalErrorHandler";
+import { connectToDatabase } from "./utils/db";
+
+// Connect to DB
+connectToDatabase();
 
 const app: Application = express();
 
