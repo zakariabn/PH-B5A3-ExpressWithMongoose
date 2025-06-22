@@ -1,20 +1,19 @@
-import mongoose, { model } from "mongoose";
+import mongoose, { Model, model } from "mongoose";
 import { DateTime } from "luxon";
-import { IBorrow } from "../interfaces/borrow.interfaces";
+import {
+  IBorrow,
+  IBorrowInstanceMethod,
+} from "../interfaces/borrow.interfaces";
+import Book from "./book.model";
+import { IBook } from "../interfaces/book.interfaces";
 
 const defaultDue = 3;
 
-// --- Extend for instance method
-export interface IBorrowDocument extends IBorrow, mongoose.Document {
-  isOverdue(): boolean;
-}
-
-// --- Extend for static method
-export interface IBorrowModel extends mongoose.Model<IBorrowDocument> {
-  findByBook(bookId: string): Promise<IBorrowDocument[]>;
-}
-
-const borrowSchema = new mongoose.Schema<IBorrowDocument, IBorrowModel>(
+const borrowSchema = new mongoose.Schema<
+  IBorrow,
+  Model<IBorrow>,
+  IBorrowInstanceMethod
+>(
   {
     book: {
       type: mongoose.Types.ObjectId,
@@ -49,16 +48,9 @@ borrowSchema.post("save", function (doc, next) {
   next();
 });
 
-// --- Static method
-borrowSchema.statics.findByBook = function (bookId: string) {
-  return this.find({ book: bookId });
-};
+borrowSchema.method("isOverdue", function () {
+  return this.dueDate < new Date();
+});
 
-// --- Instance method
-borrowSchema.methods.isOverdue = function () {
-  return DateTime.now() > DateTime.fromJSDate(this.dueDate);
-};
-
-// --- Final model export
-const Borrow = model<IBorrowDocument, IBorrowModel>("borrow", borrowSchema);
+const Borrow = model("borrow", borrowSchema);
 export default Borrow;

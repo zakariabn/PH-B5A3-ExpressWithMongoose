@@ -40,13 +40,11 @@ borrowRouter.post("/", async (req: Request, res: Response): Promise<void> => {
     }
 
     borrowBook.copies -= quantity;
-    borrowBook.available = borrowBook.copies > 0;
+    borrowBook.updateAvailability();
 
-    // saving updated books info
     await borrowBook.save();
 
     // const newBorrow = await Borrow.create(validBorrowReqBody.data);
-
     const newBorrow = new Borrow(validBorrowReqBody.data);
     await newBorrow.save();
 

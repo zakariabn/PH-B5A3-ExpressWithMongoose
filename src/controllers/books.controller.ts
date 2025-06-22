@@ -118,8 +118,6 @@ export const getAllBooks = async (
       query.genre = filter;
     }
 
-    const isAvailable = Book.isCopiesAvailable();
-
     const allBooks = await Book.find(query)
       .sort({ [sortBy]: sort })
       .limit(limit);

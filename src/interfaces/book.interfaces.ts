@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 
 export type Genre =
   | "FICTION"
@@ -19,9 +19,13 @@ export interface IBook {
 }
 
 export interface IBookInstanceMethod {
-  isCopiesAvailable(): boolean;
+  updateAvailability(): void;
 }
 
-export interface BookStaticMethods extends Model<IBook> {
-  isCopiesAvailable(): boolean;
+// Full document (model instance)
+export interface IBookDocument extends IBook, Document, IBookInstanceMethod {}
+
+// Static methods
+export interface BookStaticMethods extends Model<IBookDocument> {
+  // isCopiesAvailable(): boolean;
 }

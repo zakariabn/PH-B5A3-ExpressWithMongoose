@@ -5,3 +5,7 @@ export interface IBorrow {
   quantity: number;
   dueDate: Date;
 }
+
+export interface IBorrowInstanceMethod {
+  isOverdue(): boolean;
+}

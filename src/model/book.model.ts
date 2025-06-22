@@ -1,14 +1,12 @@
 import mongoose, { model, ObjectId } from "mongoose";
 import {
   BookStaticMethods,
-  IBook,
-  IBookInstanceMethod,
+  IBookDocument,
 } from "../interfaces/book.interfaces";
 
 const bookSchema = new mongoose.Schema<
-  IBook,
-  BookStaticMethods,
-  IBookInstanceMethod
+  IBookDocument, // document type (with instance methods)
+  BookStaticMethods // static methods
 >(
   {
     title: { type: String, required: true },
@@ -33,17 +31,11 @@ const bookSchema = new mongoose.Schema<
   { versionKey: false, timestamps: true }
 );
 
-bookSchema.method("isCopiesAvailable", function () {
-  return this.copies > 0;
+bookSchema.method("updateAvailability", async function () {
+  const isAvailable = this.copies > 0;
+  this.available = isAvailable;
+  // await this.save();
 });
 
-bookSchema.static("isCopiesAvailable", async function (bookId: string) {
-  const book: IBook | null = await this.findById(bookId);
-
-  if (book !== null) {
-    return book.copies > 0;
-  }
-});
-
-const Book = model<IBook, BookStaticMethods>("books", bookSchema);
+const Book = model<IBookDocument, BookStaticMethods>("books", bookSchema);
 export default Book;
