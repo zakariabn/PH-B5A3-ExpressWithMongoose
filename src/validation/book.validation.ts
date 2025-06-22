@@ -10,10 +10,10 @@ export const genreEnum = z.enum([
 ]);
 
 export const bookZodSchema = z.object({
-  title: z.string().min(2).trim(),
-  author: z.string().min(2).trim(),
+  title: z.string().trim(),
+  author: z.string().trim(),
   genre: genreEnum,
-  isbn: z.number().min(5),
+  isbn: z.string(),
   copies: z.number().min(1),
   available: z.boolean().default(true),
   description: z.string().trim().optional(),

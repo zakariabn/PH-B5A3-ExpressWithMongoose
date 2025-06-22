@@ -9,5 +9,5 @@ export const borrowBookZodSchema = z.object({
   // dueDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
   //   message: "Invalid date format",
   // }).optional,
-  dueDate: z.date().optional(),
+  dueDate: z.string().optional(),
 });

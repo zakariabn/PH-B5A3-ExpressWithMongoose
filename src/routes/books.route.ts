@@ -15,7 +15,7 @@ const bookRouter: Router = express.Router();
 bookRouter.post("/", createBook);
 
 // update books copies with book id
-bookRouter.patch("/:book_id", updateBook);
+bookRouter.put("/:book_id", updateBook);
 
 // get all books with filtering support
 bookRouter.get("/", getAllBooks);
