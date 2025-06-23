@@ -2,7 +2,7 @@ import express, { Application, NextFunction, Request, Response } from "express";
 import bookRouter from "./routes/books.route";
 import borrowRouter from "./routes/borrow.route";
 import { success } from "zod/v4";
-import errorHandler from "./middleware/globalErrorHandler";
+import errorHandler from "./middleware/errorHandler";
 import { connectToDatabase } from "./utils/db";
 
 // Connect to DB and log any potential errors

@@ -1,14 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
-
-interface CustomError extends Error {
-  statusCode?: number;
-  errors?: Record<string, string>;
-  code?: number;
-  keyValue?: Record<string, any>;
-  path?: string;
-  value?: string;
-}
+import { CustomError } from "../interfaces/error.interfaces";
 
 const errorHandler = (
   err: CustomError,
@@ -67,7 +59,6 @@ const errorHandler = (
     message,
     error: errorDetails,
   });
-  next();
 };
 
 export default errorHandler;

@@ -1,19 +1,12 @@
 import mongoose, { Model, model } from "mongoose";
 import { DateTime } from "luxon";
-import {
-  IBorrow,
-  IBorrowInstanceMethod,
-} from "../interfaces/borrow.interfaces";
+import { IBorrowDocument } from "../interfaces/borrow.interfaces";
 import Book from "./book.model";
 import { IBook } from "../interfaces/book.interfaces";
 
 const defaultDue = 3;
 
-const borrowSchema = new mongoose.Schema<
-  IBorrow,
-  Model<IBorrow>,
-  IBorrowInstanceMethod
->(
+const borrowSchema = new mongoose.Schema<IBorrowDocument>(
   {
     book: {
       type: mongoose.Types.ObjectId,

@@ -55,10 +55,10 @@ npm run dev
 
 This project is built using a feature-based, service-oriented architecture to ensure a clear separation of concerns.
 
--   **Controllers**: Handle incoming HTTP requests, validate request bodies using **Zod**, and send back responses. They delegate the core business logic to the service layer.
--   **Services**: Contain the main business logic. They interact with the database models and perform all the necessary operations.
--   **Routes**: Define the API endpoints and map them to the appropriate controllers.
--   **Global Error Handler**: A middleware that catches all errors (both synchronous and asynchronous) and formats them into a consistent JSON response, preventing the application from crashing.
+- **Controllers**: Handle incoming HTTP requests, validate request bodies using **Zod**, and send back responses. They delegate the core business logic to the service layer.
+- **Services**: Contain the main business logic. They interact with the database models and perform all the necessary operations.
+- **Routes**: Define the API endpoints and map them to the appropriate controllers.
+- **Global Error Handler**: A middleware that catches all errors (both synchronous and asynchronous) and formats them into a consistent JSON response, preventing the application from crashing.
 
 This structure makes the codebase clean, maintainable, and easy to test.
 
@@ -110,6 +110,7 @@ This structure makes the codebase clean, maintainable, and easy to test.
 
 - **Endpoint:** `GET /api/books`
 - **Query Parameters:**
+
   - `filter` (genre): e.g. `FANTASY`
   - `sortBy`: e.g. `createdAt`
   - `sort`: `asc` or `desc`
@@ -234,6 +235,7 @@ This structure makes the codebase clean, maintainable, and easy to test.
   ```
 
 - **Business Logic:**
+
   - Checks if enough copies are available.
   - Deducts quantity from book's copies.
   - Sets `available` to `false` if copies reach 0.
@@ -307,9 +309,7 @@ All errors are handled by a global middleware. For request validation, Zod is us
         "inclusive": true,
         "exact": false,
         "message": "Copies must be a non-negative number",
-        "path": [
-          "copies"
-        ]
+        "path": ["copies"]
       }
     ],
     "name": "ZodError"

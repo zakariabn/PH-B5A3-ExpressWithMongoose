@@ -6,6 +6,7 @@ import {
 } from "../validation/book.validation";
 import Book from "../model/book.model";
 import { isValidObjectId } from "mongoose";
+import { CustomError } from "../utils/customError";
 
 export const createBook = async (
   req: Request,
@@ -17,13 +18,11 @@ export const createBook = async (
     const validBookData = bookZodSchema.safeParse(body);
 
     if (!validBookData.success) {
-      res.status(400).json({
-        success: false,
-        message: "Validation failed",
-        errorFrom: validBookData.error.name,
-        errors: validBookData.error.format(),
-      });
-      return;
+      throw new CustomError(
+        "Validation failed",
+        400,
+        validBookData.error.format()
+      );
     }
 
     const books = await Book.create(validBookData.data);
@@ -48,22 +47,14 @@ export const updateBook = async (
 
   // Validate request body
   const parsed = updateBookRequestBodyZodSchema.safeParse(req.body);
+
   if (!parsed.success) {
-    res.status(400).json({
-      success: false,
-      message: "Invalid request body",
-      errors: parsed.error.format(),
-    });
-    return;
+    throw new CustomError("Invalid request body", 400, parsed.error.format());
   }
 
   // Validate MongoDB ObjectId
   if (!isValidObjectId(id)) {
-    res.status(400).json({
-      success: false,
-      message: `Invalid book ID: ${id}`,
-    });
-    return;
+    throw new CustomError(`Invalid book ID: ${id}`, 400);
   }
 
   const { copies } = parsed.data;
@@ -90,7 +81,7 @@ export const updateBook = async (
     });
   } catch (error) {
     console.error("Error updating book");
-    next(error); // Let your global error handler catch this
+    next(error);
   }
 };
 
@@ -109,6 +100,7 @@ export const getAllBooks = async (
     });
     return;
   }
+
   const { filter, sortBy, sort, limit } = parseQueryResult.data;
 
   try {
@@ -141,25 +133,8 @@ export const getSingleBookById = async (
 ): Promise<void> => {
   const { book_id: id } = req.params;
 
-  // Check for valid MongoDB ObjectId
-  if (!isValidObjectId(id)) {
-    res.status(400).json({
-      success: false,
-      message: `"${id}" is not a valid ObjectId.`,
-    });
-    return;
-  }
-
   try {
-    const singleBook = await Book.findById(id);
-
-    if (!singleBook) {
-      res.status(404).json({
-        success: false,
-        message: `Book with id "${id}" not found.`,
-      });
-      return;
-    }
+    const singleBook = await Book.getBookById(id);
 
     res.status(200).json({
       success: true,
@@ -179,31 +154,17 @@ export const deleteBook = async (
 ): Promise<void> => {
   const { book_id: id } = req.params;
 
-  // Check for valid MongoDB ObjectId
-  if (!isValidObjectId(id)) {
-    res.status(400).json({
-      success: false,
-      message: `${id} is not a valid ObjectId.`,
-    });
-    return;
-  }
-
   try {
     const deletedBookData = await Book.findByIdAndDelete(id);
 
     if (!deletedBookData) {
-      res.status(200).json({
-        success: false,
-        message: `Book not found with id: ${id}`,
-        data: deletedBookData,
-      });
-      return;
+      throw new CustomError("Book not found", 404);
     }
 
     res.status(200).json({
       success: true,
       message: "Book deleted successfully",
-      data: deletedBookData,
+      data: null,
     });
   } catch (error) {
     console.error("Failed to Delete book by ID:");

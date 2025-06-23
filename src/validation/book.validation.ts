@@ -38,7 +38,7 @@ export const bookQuerySchema = z.object({
     .regex(/^\d+$/, "Limit must be a positive integer")
     .transform((val) => parseInt(val, 10))
     .optional()
-    .default(0),
+    .default(10),
   skip: z
     .string()
     .regex(/^\d+$/, "Skip must be a positive integer")

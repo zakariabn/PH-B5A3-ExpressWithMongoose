@@ -1,4 +1,4 @@
-import mongoose, { Model } from "mongoose";
+import { Document, Model } from "mongoose";
 
 export type Genre =
   | "FICTION"
@@ -27,5 +27,5 @@ export interface IBookDocument extends IBook, Document, IBookInstanceMethod {}
 
 // Static methods
 export interface BookStaticMethods extends Model<IBookDocument> {
-  // isCopiesAvailable(): boolean;
+  getBookById(id: string): Promise<IBookDocument>;
 }

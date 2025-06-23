@@ -1,13 +1,13 @@
-import mongoose, { model, ObjectId } from "mongoose";
+import mongoose, { isValidObjectId, model } from "mongoose";
 import {
-  BookStaticMethods,
   IBookDocument,
+  BookStaticMethods,
 } from "../interfaces/book.interfaces";
+import { success } from "zod/v4";
+import { CustomError } from "../utils/customError";
+import Borrow from "./borrow.model";
 
-const bookSchema = new mongoose.Schema<
-  IBookDocument, // document type (with instance methods)
-  BookStaticMethods // static methods
->(
+const bookSchema = new mongoose.Schema<IBookDocument>(
   {
     title: { type: String, required: true },
     author: { type: String, required: true },
@@ -26,10 +26,39 @@ const bookSchema = new mongoose.Schema<
     available: { type: Boolean, default: true },
     copies: { type: Number, min: 0, required: true },
     isbn: { type: String, unique: true, required: true },
-    description: { type: String },
+    description: { type: String, default: "" },
   },
   { versionKey: false, timestamps: true }
 );
+
+// when a book deleted all borrow of this book also delete form borrow collection
+bookSchema.post("findOneAndDelete", async function (doc, next) {
+  if (doc) {
+    const deletedBookId = doc._id;
+    console.log("Book deleted with ID:", deletedBookId);
+
+    // Now delete related borrows
+    await Borrow.deleteMany({ book: deletedBookId });
+  }
+  next();
+});
+
+bookSchema.static("getBookById", async function (id: string) {
+  const isValidId = isValidObjectId(id);
+
+  if (!isValidId) {
+    throw new CustomError("Invalid Object ID", 400);
+  }
+
+  const book = await this.findById(id);
+  console.log(book);
+
+  if (book) {
+    return book;
+  } else {
+    throw new CustomError("Book Not Found", 404);
+  }
+});
 
 bookSchema.method("updateAvailability", async function () {
   const isAvailable = this.copies > 0;
