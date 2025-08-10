@@ -45,4 +45,10 @@ export const bookQuerySchema = z.object({
     .transform((val) => parseInt(val, 10))
     .optional()
     .default(0),
+  page: z
+    .string()
+    .regex(/^\d+$/, "Skip must be a positive integer")
+    .transform((val) => parseInt(val, 10))
+    .optional()
+    .default(1),
 });

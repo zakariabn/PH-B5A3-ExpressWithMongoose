@@ -1,13 +1,16 @@
 import app from "./app";
-import 'dotenv/config';
+import "dotenv/config";
+import { connectToDatabase } from "./app/utils/db";
 
 const port = process.env.PORT || 5000;
 
 async function main() {
   try {
-    // Database connection is now handled by app.ts
-    // We just need to start listening here for local development
-    
+    //db connection
+    connectToDatabase().catch((err) => {
+      console.error("Startup database connection failed:", err);
+    });
+
     app.listen(port, () => {
       console.log(`🟢 App listening on port: ${port}`);
     });

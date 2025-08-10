@@ -92,6 +92,7 @@ export const getAllBooks = async (
 ): Promise<void> => {
   // validating query
   const parseQueryResult = bookQuerySchema.safeParse(req.query);
+
   if (!parseQueryResult.success) {
     res.status(400).json({
       success: false,
@@ -101,9 +102,14 @@ export const getAllBooks = async (
     return;
   }
 
-  const { filter, sortBy, sort, limit } = parseQueryResult.data;
+  const { filter, sortBy, sort, limit, page } = parseQueryResult.data;
+  const skip = (page - 1) * limit;
 
   try {
+    // pagination query
+    const totalItems = await Book.countDocuments(); // total books
+    const totalPages = Math.ceil(totalItems / limit);
+
     const query: Record<string, any> = {};
 
     if (filter) {
@@ -112,13 +118,21 @@ export const getAllBooks = async (
 
     const allBooks = await Book.find(query)
       .sort({ [sortBy]: sort })
+      .skip(skip)
       .limit(limit);
 
     res.status(200).json({
       success: true,
       message: "Books retrieved successfully",
       count: allBooks.length,
-      data: allBooks,
+      data: {
+        books: allBooks,
+        pagination: {
+          page,
+          totalPages,
+          limit,
+        },
+      },
     });
   } catch (error) {
     console.error("Failed to get all books:");

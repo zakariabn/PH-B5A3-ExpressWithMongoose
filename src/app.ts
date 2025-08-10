@@ -1,26 +1,27 @@
 import express, { Application, NextFunction, Request, Response } from "express";
-import bookRouter from "./routes/books.route";
-import borrowRouter from "./routes/borrow.route";
-import { success } from "zod/v4";
-import errorHandler from "./middleware/errorHandler";
-import { connectToDatabase } from "./utils/db";
-
-// Connect to DB and log any potential errors
-connectToDatabase().catch((err) => {
-  console.error("Startup database connection failed:", err);
-});
+import errorHandler from "./app/middleware/errorHandler";
+import cors from "cors";
+import { router } from "./app/routes";
 
 const app: Application = express();
 
-// middleware
-app.use(express.json()); //for body parser
+//for body parser
+app.use(express.json());
+app.use(
+  cors({
+    origin: [
+      // Local frontend during development
+      "http://localhost:5173",
+
+      // Production frontend
+      "https://library-management-client-silk.vercel.app",
+    ],
+    // credentials: true,
+  })
+);
 
 // routes
-app.use("/api/books", bookRouter);
-app.use("/api/borrow", borrowRouter);
-
-// global error handler
-app.use(errorHandler);
+app.use("/api", router);
 
 // root path
 app.get("/", (req: Request, res: Response) => {
@@ -29,6 +30,9 @@ app.get("/", (req: Request, res: Response) => {
     message: "Welcome to library management app",
   });
 });
+
+// global error handler
+app.use(errorHandler);
 
 // 404 route
 app.use((req: Request, res: Response, next: NextFunction) => {
